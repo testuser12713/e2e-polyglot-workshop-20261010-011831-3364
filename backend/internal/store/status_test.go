@@ -47,10 +47,10 @@ func testPool(t *testing.T) *pgxpool.Pool {
 	return pool
 }
 
-// seedOrder inserts a customer, a vehicle and an order with the given status
-// and returns the order's id and number. Every fixture uses a unique suffix so
-// parallel tests never touch each other's rows.
-func seedOrder(t *testing.T, pool *pgxpool.Pool, status domain.OrderStatus) (int, string) {
+// seedOrderWithStatus inserts a customer, a vehicle and an order with the given
+// status and returns the order's id and number. Every fixture uses a unique
+// suffix so parallel tests never touch each other's rows.
+func seedOrderWithStatus(t *testing.T, pool *pgxpool.Pool, status domain.OrderStatus) (int, string) {
 	t.Helper()
 	ctx := context.Background()
 	suffix := fmt.Sprintf("%d", time.Now().UnixNano())
@@ -108,7 +108,7 @@ func currentStatus(t *testing.T, pool *pgxpool.Pool, orderID int) domain.OrderSt
 func TestApplyStatusTransitionWalksTheFullChain(t *testing.T) {
 	pool := testPool(t)
 	st := store.New(pool)
-	orderID, orderNumber := seedOrder(t, pool, domain.StatusAngefragt)
+	orderID, orderNumber := seedOrderWithStatus(t, pool, domain.StatusAngefragt)
 
 	steps := []domain.OrderStatus{
 		domain.StatusBestaetigt,
@@ -176,7 +176,7 @@ func TestApplyStatusTransitionRejectsJumpsAndLeavesDatabaseUnchanged(t *testing.
 	}
 	for _, tc := range jumps {
 		t.Run(tc.name, func(t *testing.T) {
-			orderID, orderNumber := seedOrder(t, pool, tc.from)
+			orderID, orderNumber := seedOrderWithStatus(t, pool, tc.from)
 			_, err := st.ApplyStatusTransition(context.Background(), orderNumber, tc.to, "Anna Meier", nil)
 			if !errors.Is(err, store.ErrInvalidTransition) {
 				t.Fatalf("transition %s -> %s: err = %v, want ErrInvalidTransition", tc.from, tc.to, err)
@@ -204,7 +204,7 @@ func TestApplyStatusTransitionUnknownOrder(t *testing.T) {
 func TestApplyStatusTransitionRollsBackWhenPublishFails(t *testing.T) {
 	pool := testPool(t)
 	st := store.New(pool)
-	orderID, orderNumber := seedOrder(t, pool, domain.StatusInArbeit)
+	orderID, orderNumber := seedOrderWithStatus(t, pool, domain.StatusInArbeit)
 
 	publish := func(ctx context.Context, orderID int, orderNumber string) error {
 		return errors.New("queue unavailable")
