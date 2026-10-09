@@ -6,15 +6,136 @@
       "dir": "frontend",
       "stack": "web-vite",
       "kind": "server",
-      "install": [["npm", "ci"]],
-      "build": [["npm", "run", "build"]],
-      "test": [["npm", "test", "--", "--run", "--passWithNoTests"]],
-      "start": ["npm", "run", "preview", "--", "--host", "0.0.0.0", "--port", "${PORT}", "--strictPort"],
+      "install": [
+        [
+          "npm",
+          "ci"
+        ]
+      ],
+      "build": [
+        [
+          "npm",
+          "run",
+          "build"
+        ]
+      ],
+      "test": [
+        [
+          "npm",
+          "test",
+          "--",
+          "--run",
+          "--passWithNoTests"
+        ]
+      ],
+      "start": [
+        "npm",
+        "run",
+        "preview",
+        "--",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "${PORT}",
+        "--strictPort"
+      ],
       "port": 5173,
       "port_env": "PORT",
-      "health": { "path": "/", "expect_status": [200] },
+      "health": {
+        "path": "/",
+        "expect_status": [
+          200
+        ]
+      },
       "env": {
-        "VITE_API_BASE_URL": { "dev": "${service:api.origin}" }
+        "VITE_API_BASE_URL": {
+          "dev": "${service:api.origin}"
+        }
+      }
+    },
+    {
+      "name": "db",
+      "kind": "database",
+      "engine": "postgres"
+    },
+    {
+      "name": "queue",
+      "kind": "database",
+      "engine": "valkey"
+    },
+    {
+      "name": "api",
+      "dir": "backend",
+      "stack": "go",
+      "kind": "server",
+      "install": [
+        [
+          "go",
+          "mod",
+          "download"
+        ]
+      ],
+      "build": [
+        [
+          "go",
+          "build",
+          "./..."
+        ]
+      ],
+      "test": [
+        [
+          "go",
+          "test",
+          "./..."
+        ]
+      ],
+      "lint": [
+        [
+          "go",
+          "vet",
+          "./..."
+        ]
+      ],
+      "start": [
+        "go",
+        "run",
+        "."
+      ],
+      "port": 8080,
+      "port_env": "PORT",
+      "health": {
+        "path": "/api/health",
+        "expect_status": [
+          200
+        ]
+      },
+      "depends_on": [
+        "db",
+        "queue"
+      ],
+      "env": {
+        "DATABASE_URL": {
+          "dev": "${service:db.url}"
+        },
+        "VALKEY_URL": {
+          "dev": "${service:queue.url}"
+        },
+        "WORKSHOP_ADMIN_EMAIL": {
+          "dev": "admin@werkstatt.example",
+          "not_secret": true,
+          "why": "The seeded administrator's e-mail address is public identity, not a credential; the password and token secret are generated per run."
+        },
+        "WORKSHOP_ADMIN_PASSWORD": {
+          "generate": "hex",
+          "bytes": 16
+        },
+        "AUTH_TOKEN_SECRET": {
+          "generate": "hex",
+          "bytes": 32
+        },
+        "WEB_ORIGIN": {
+          "dev": "${service:web.origin}"
+        }
       }
     }
   ]
