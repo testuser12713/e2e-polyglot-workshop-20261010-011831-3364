@@ -20,9 +20,9 @@ type seededOrder struct {
 	plate       string
 }
 
-// seedOrder creates one customer, vehicle, order, two items and two status
+// seedCustomerOrder creates one customer, vehicle, order, two items and two status
 // events. It only inserts rows it owns and removes exactly those again.
-func seedOrder(t *testing.T, pool *pgxpool.Pool) seededOrder {
+func seedCustomerOrder(t *testing.T, pool *pgxpool.Pool) seededOrder {
 	t.Helper()
 	ctx := context.Background()
 
@@ -121,7 +121,7 @@ func addInvoice(t *testing.T, pool *pgxpool.Pool, orderID int) string {
 func TestOrderForCustomerReturnsDetail(t *testing.T) {
 	pool := testsupport.NewPool(t)
 	st := store.New(pool)
-	seeded := seedOrder(t, pool)
+	seeded := seedCustomerOrder(t, pool)
 
 	orderID, detail, err := st.OrderForCustomer(context.Background(), seeded.orderNumber, seeded.plate)
 	if err != nil {
@@ -159,7 +159,7 @@ func TestOrderForCustomerReturnsDetail(t *testing.T) {
 func TestOrderForCustomerWrongPlateIsNotFound(t *testing.T) {
 	pool := testsupport.NewPool(t)
 	st := store.New(pool)
-	seeded := seedOrder(t, pool)
+	seeded := seedCustomerOrder(t, pool)
 
 	_, _, err := st.OrderForCustomer(context.Background(), seeded.orderNumber, "FALSCH-1")
 	if !errors.Is(err, store.ErrNotFound) {
@@ -170,7 +170,7 @@ func TestOrderForCustomerWrongPlateIsNotFound(t *testing.T) {
 func TestOrderForCustomerUnknownNumberIsNotFound(t *testing.T) {
 	pool := testsupport.NewPool(t)
 	st := store.New(pool)
-	seeded := seedOrder(t, pool)
+	seeded := seedCustomerOrder(t, pool)
 
 	_, _, err := st.OrderForCustomer(context.Background(), "GIBT-ES-NICHT", seeded.plate)
 	if !errors.Is(err, store.ErrNotFound) {
@@ -181,7 +181,7 @@ func TestOrderForCustomerUnknownNumberIsNotFound(t *testing.T) {
 func TestOrderHistoryReturnsEvents(t *testing.T) {
 	pool := testsupport.NewPool(t)
 	st := store.New(pool)
-	seeded := seedOrder(t, pool)
+	seeded := seedCustomerOrder(t, pool)
 
 	events, err := st.OrderHistory(context.Background(), seeded.id)
 	if err != nil {
@@ -207,7 +207,7 @@ func TestOrderHistoryReturnsEvents(t *testing.T) {
 func TestInvoiceForOrderNilBeforeInvoicing(t *testing.T) {
 	pool := testsupport.NewPool(t)
 	st := store.New(pool)
-	seeded := seedOrder(t, pool)
+	seeded := seedCustomerOrder(t, pool)
 
 	invoice, err := st.InvoiceForOrder(context.Background(), seeded.id)
 	if err != nil {
@@ -221,7 +221,7 @@ func TestInvoiceForOrderNilBeforeInvoicing(t *testing.T) {
 func TestInvoiceForOrderReturnsLinesAndCents(t *testing.T) {
 	pool := testsupport.NewPool(t)
 	st := store.New(pool)
-	seeded := seedOrder(t, pool)
+	seeded := seedCustomerOrder(t, pool)
 	invoiceNumber := addInvoice(t, pool, seeded.id)
 
 	invoice, err := st.InvoiceForOrder(context.Background(), seeded.id)
