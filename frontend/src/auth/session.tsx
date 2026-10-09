@@ -6,6 +6,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { apiFetch } from "../lib/api";
 
 export interface Employee {
   id: number;
@@ -27,12 +28,17 @@ interface StoredSession {
   token: string | null;
 }
 
+interface LoginResponse {
+  token: string;
+  employee: Employee;
+}
+
 function readStoredSession(): StoredSession {
   if (typeof window === "undefined") {
     return { employee: null, token: null };
   }
   try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
+    const raw = window.sessionStorage.getItem(STORAGE_KEY);
     if (!raw) {
       return { employee: null, token: null };
     }
@@ -52,9 +58,9 @@ function writeStoredSession(session: StoredSession): void {
   }
   try {
     if (session.token || session.employee) {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
+      window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify(session));
     } else {
-      window.localStorage.removeItem(STORAGE_KEY);
+      window.sessionStorage.removeItem(STORAGE_KEY);
     }
   } catch {
     // A full or unavailable storage must never break the running app.
@@ -69,8 +75,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(initial.token);
 
   const login = useCallback(
-    async (_email: string, _password: string): Promise<void> => {
-      throw new Error("Die Anmeldung ist noch nicht implementiert.");
+    async (email: string, password: string): Promise<void> => {
+      const result = await apiFetch<LoginResponse>("/api/workshop/login", {
+        method: "POST",
+        body: { email, password },
+      });
+
+      setEmployee(result.employee);
+      setToken(result.token);
+      writeStoredSession({ employee: result.employee, token: result.token });
     },
     [],
   );
