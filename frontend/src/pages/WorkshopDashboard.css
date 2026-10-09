@@ -1,0 +1,250 @@
+/*
+ * Component styles for the workshop dashboard.
+ *
+ * Only DESIGN.md tokens are used. Colours and spacings come from the tokens in
+ * src/styles/global.css; status colours are the exact DESIGN.md values declared
+ * locally so this page does not have to touch the shared stylesheet.
+ */
+
+.wd-stat-tiles {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
+}
+
+.wd-stat-tile {
+  display: flex;
+  flex-direction: column;
+  min-height: 120px;
+  padding: var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow:
+    0 1px 2px rgba(20, 24, 31, 0.06),
+    0 8px 24px rgba(20, 24, 31, 0.06);
+}
+
+.wd-stat-label {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--color-fgMuted);
+}
+
+.wd-stat-value {
+  margin-top: var(--space-0);
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--color-fg);
+  font-variant-numeric: tabular-nums;
+}
+
+.wd-stat-sub {
+  margin-top: var(--space-0);
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--color-fgMuted);
+}
+
+/* Neutral skeleton while a tile is still loading — never a fake zero. */
+.wd-skeleton {
+  display: inline-block;
+  width: 60%;
+  height: 32px;
+  margin-top: var(--space-0);
+  border-radius: var(--radius-sm);
+  background: var(--color-surfaceAlt);
+  animation: wd-skeleton-pulse 1.4s ease-in-out infinite;
+}
+
+.wd-skeleton--sub {
+  width: 72%;
+  height: 12px;
+}
+
+@keyframes wd-skeleton-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wd-skeleton {
+    animation: none;
+  }
+}
+
+.wd-card-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
+.wd-card-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.wd-table-scroll {
+  overflow-x: auto;
+}
+
+.wd-data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.wd-data-table th {
+  padding: var(--space-2) var(--space-3);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  text-align: left;
+  color: var(--color-fgMuted);
+  border-bottom: 1px solid var(--color-borderStrong);
+  white-space: nowrap;
+}
+
+.wd-data-table td {
+  padding: var(--space-2) var(--space-3);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--color-fg);
+  border-bottom: 1px solid var(--color-border);
+  vertical-align: middle;
+}
+
+.wd-data-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.wd-data-table tbody tr:hover {
+  background: var(--color-surfaceAlt);
+}
+
+.wd-num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.wd-muted {
+  color: var(--color-fgMuted);
+}
+
+.wd-order-link {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* StatusBadge — dot plus word, never colour alone. */
+.wd-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+
+.wd-badge__dot {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.wd-status--angefragt {
+  color: #6b7684;
+  background: #eef1f4;
+}
+.wd-status--angefragt .wd-badge__dot {
+  background: #6b7684;
+}
+
+.wd-status--bestaetigt {
+  color: #0b63ce;
+  background: #e7f0fd;
+}
+.wd-status--bestaetigt .wd-badge__dot {
+  background: #0b63ce;
+}
+
+.wd-status--inArbeit {
+  color: #b44a0a;
+  background: #fdede3;
+}
+.wd-status--inArbeit .wd-badge__dot {
+  background: #b44a0a;
+}
+
+.wd-status--fertig {
+  color: #1b7f4b;
+  background: #e4f4eb;
+}
+.wd-status--fertig .wd-badge__dot {
+  background: #1b7f4b;
+}
+
+.wd-status--abgeholt {
+  color: #3a4450;
+  background: #e9ecef;
+}
+.wd-status--abgeholt .wd-badge__dot {
+  background: #3a4450;
+}
+
+.wd-alert {
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid #c0342b;
+  border-left: 3px solid #c0342b;
+  border-radius: var(--radius-sm);
+  background: #fcebea;
+  color: #c0342b;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.wd-empty {
+  padding: var(--space-5) var(--space-4);
+  text-align: center;
+  color: var(--color-fgMuted);
+  font-size: 14px;
+}
+
+@media (min-width: 640px) and (max-width: 1023px) {
+  .wd-stat-tiles {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 639px) {
+  .wd-stat-tiles {
+    grid-template-columns: 1fr;
+    margin-bottom: var(--space-5);
+  }
+
+  .wd-card-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .wd-card-header .wd-card-action .btn {
+    width: 100%;
+  }
+}
