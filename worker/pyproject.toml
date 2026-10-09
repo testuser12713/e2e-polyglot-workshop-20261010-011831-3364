@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "workshop-worker"
+version = "0.1.0"
+description = "Invoice worker of the Kfz-Werkstatt customer portal"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "psycopg[binary,pool]>=3.3,<4",
+    "valkey>=6.1,<7",
+]
+
+[tool.setuptools]
+# The package lives in this directory; its modules are ``worker.*``.
+packages = ["worker"]
+package-dir = { "worker" = "." }
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

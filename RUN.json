@@ -137,6 +137,43 @@
           "dev": "${service:web.origin}"
         }
       }
+    },
+    {
+      "name": "worker",
+      "dir": "worker",
+      "stack": "python",
+      "kind": "worker",
+      "install": [
+        [
+          "${python}",
+          "-m",
+          "pip",
+          "install",
+          "-q",
+          "-e",
+          "."
+        ]
+      ],
+      "start": [
+        "${python}",
+        "-m",
+        "worker"
+      ],
+      "depends_on": [
+        "db",
+        "queue"
+      ],
+      "env": {
+        "DATABASE_URL": {
+          "dev": "${service:db.url}"
+        },
+        "VALKEY_URL": {
+          "dev": "${service:queue.url}"
+        },
+        "HOURLY_RATE_CENTS": {
+          "dev": "8900"
+        }
+      }
     }
   ]
 }
