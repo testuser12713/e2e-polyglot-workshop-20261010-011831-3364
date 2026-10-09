@@ -32,9 +32,9 @@ func uniqueToken(t *testing.T) string {
 	return sb.String()
 }
 
-// seedOrder inserts a customer, a vehicle and an order and returns the order
-// number together with its license plate and status.
-func seedOrder(t *testing.T, pool *pgxpool.Pool, token, suffix string, status domain.OrderStatus, plate string, createdAt time.Time) (string, string) {
+// seedWorkshopOrder inserts a customer, a vehicle and an order and returns the
+// order number together with its license plate and status.
+func seedWorkshopOrder(t *testing.T, pool *pgxpool.Pool, token, suffix string, status domain.OrderStatus, plate string, createdAt time.Time) (string, string) {
 	t.Helper()
 	ctx := context.Background()
 	orderNumber := "WS-" + token + "-" + suffix
@@ -105,9 +105,9 @@ func TestListOrdersFiltersByStatusPlateAndCombination(t *testing.T) {
 	token := uniqueToken(t)
 	base := time.Date(2026, 3, 1, 8, 0, 0, 0, time.UTC)
 
-	first, _ := seedOrder(t, pool, token, "1", domain.StatusBestaetigt, "B-"+token+"-AB1", base)
-	second, _ := seedOrder(t, pool, token, "2", domain.StatusBestaetigt, "B-"+token+"-XY2", base.Add(time.Minute))
-	third, _ := seedOrder(t, pool, token, "3", domain.StatusAngefragt, "B-"+token+"-AB3", base.Add(2*time.Minute))
+	first, _ := seedWorkshopOrder(t, pool, token, "1", domain.StatusBestaetigt, "B-"+token+"-AB1", base)
+	second, _ := seedWorkshopOrder(t, pool, token, "2", domain.StatusBestaetigt, "B-"+token+"-XY2", base.Add(time.Minute))
+	third, _ := seedWorkshopOrder(t, pool, token, "3", domain.StatusAngefragt, "B-"+token+"-AB3", base.Add(2*time.Minute))
 
 	confirmed := domain.StatusBestaetigt
 
@@ -136,7 +136,7 @@ func TestOrderForWorkshopReturnsItemsAndHistory(t *testing.T) {
 	applySchema(t, pool)
 	st := store.New(pool)
 	token := uniqueToken(t)
-	orderNumber, plate := seedOrder(t, pool, token, "1", domain.StatusInArbeit, "B-"+token+"-AB1", time.Now().UTC())
+	orderNumber, plate := seedWorkshopOrder(t, pool, token, "1", domain.StatusInArbeit, "B-"+token+"-AB1", time.Now().UTC())
 
 	var orderID int64
 	if err := pool.QueryRow(ctx, `SELECT id FROM orders WHERE order_number = $1`, orderNumber).Scan(&orderID); err != nil {
