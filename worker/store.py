@@ -72,10 +72,11 @@ def _insert_invoice(conn: Connection, draft: InvoiceDraft) -> tuple[int, str] | 
         invoice_id, invoice_number = inserted
         for line in draft.lines:
             cur.execute(
-                "INSERT INTO invoice_lines (invoice_id, description, quantity, "
-                "unit_price_cents, total_cents) VALUES (%s, %s, %s, %s, %s)",
+                "INSERT INTO invoice_lines (invoice_id, kind, description, quantity, "
+                "unit_price_cents, total_cents) VALUES (%s, %s, %s, %s, %s, %s)",
                 (
                     invoice_id,
+                    line.kind,
                     line.description,
                     _quantity_to_int(line.quantity),
                     line.unit_price_cents,

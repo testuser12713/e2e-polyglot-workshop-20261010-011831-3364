@@ -20,12 +20,17 @@ class QueueMessage:
 
 @dataclass
 class InvoiceLine:
-    """One invoice position, all amounts in whole cents."""
+    """One invoice position, all amounts in whole cents.
+
+    ``kind`` is "labor" or "part": it labels the line in the invoice's
+    "Position" column.
+    """
 
     description: str
     quantity: float
     unit_price_cents: int
     total_cents: int
+    kind: str = ""
 
 
 @dataclass

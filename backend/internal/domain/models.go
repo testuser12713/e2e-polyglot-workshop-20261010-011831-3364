@@ -70,8 +70,10 @@ type OrderDetail struct {
 	History            []StatusEvent `json:"history"`
 }
 
-// InvoiceLine is one line of an invoice.
+// InvoiceLine is one line of an invoice. Kind is "labor" or "part" and drives
+// the "Position" column of the customer invoice table.
 type InvoiceLine struct {
+	Kind           string `json:"kind"`
 	Description    string `json:"description"`
 	Quantity       int    `json:"quantity"`
 	UnitPriceCents int    `json:"unit_price_cents"`
