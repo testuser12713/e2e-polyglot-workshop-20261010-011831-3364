@@ -4,44 +4,15 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"sync"
 	"testing"
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	"workshop/internal/db"
 	"workshop/internal/domain"
 	"workshop/internal/store"
 	"workshop/internal/testsupport"
 )
-
-// applyOnce ensures the schema is created once per test process.
-var applyOnce sync.Once
-
-// applySchema creates the api schema under a PostgreSQL advisory lock, so the
-// CREATE TABLE IF NOT EXISTS statements cannot race when the test packages run
-// in parallel against the same database.
-func applySchema(t *testing.T, pool *pgxpool.Pool) {
-	t.Helper()
-	applyOnce.Do(func() {
-		ctx := context.Background()
-		conn, err := pool.Acquire(ctx)
-		if err != nil {
-			t.Fatalf("acquire schema connection: %v", err)
-		}
-		defer conn.Release()
-		if _, err := conn.Exec(ctx, `SELECT pg_advisory_lock(773311224)`); err != nil {
-			t.Fatalf("lock schema: %v", err)
-		}
-		defer func() {
-			_, _ = conn.Exec(ctx, `SELECT pg_advisory_unlock(773311224)`)
-		}()
-		if err := db.Apply(ctx, pool); err != nil {
-			t.Fatalf("apply schema: %v", err)
-		}
-	})
-}
 
 type seededOrder struct {
 	id          int
