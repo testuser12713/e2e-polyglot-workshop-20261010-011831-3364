@@ -29,7 +29,8 @@ def process_message(msg: QueueMessage) -> None:
     """Run the full pipeline for one message: build, save, notify."""
     draft = invoice.build_invoice(msg)
     saved = store.save_invoice(draft)
-    outbox.enqueue_notification(saved)
+    with get_pool().connection() as conn:
+        outbox.enqueue_notification(conn, saved)
 
 
 def log_failure(exc: Exception, msg: QueueMessage | None = None) -> None:
