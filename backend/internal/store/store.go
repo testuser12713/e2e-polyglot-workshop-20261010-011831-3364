@@ -27,10 +27,4 @@ func (s *Store) Ping(ctx context.Context) error {
 	return s.pool.Ping(ctx)
 }
 
-// EnsureSeedEmployee creates the workshop admin employee from configuration if
-// no employee with that e-mail exists yet.
-//
-// Skeleton stub: the workshop login ticket implements this.
-func (s *Store) EnsureSeedEmployee(ctx context.Context, email, passwordHash string) error {
-	return nil
-}
+// EnsureSeedEmployee and FindEmployeeByEmail live in store/users.go.
