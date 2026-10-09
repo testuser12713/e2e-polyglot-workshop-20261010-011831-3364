@@ -11,36 +11,10 @@ import (
 
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	"workshop/internal/db"
 	"workshop/internal/domain"
 	"workshop/internal/store"
 	"workshop/internal/testsupport"
 )
-
-// schemaLockKey serializes schema creation across test binaries that share one
-// test database. CREATE TABLE IF NOT EXISTS is not safe under concurrency.
-const schemaLockKey = int64(832541120)
-
-// applySchema creates the schema after taking a database-wide advisory lock, so
-// two test packages running in parallel never race on the DDL.
-func applySchema(t *testing.T, pool *pgxpool.Pool) {
-	t.Helper()
-	ctx := context.Background()
-	conn, err := pool.Acquire(ctx)
-	if err != nil {
-		t.Fatalf("acquire schema lock connection: %v", err)
-	}
-	defer conn.Release()
-	if _, err := conn.Exec(ctx, "SELECT pg_advisory_lock($1)", schemaLockKey); err != nil {
-		t.Fatalf("acquire schema lock: %v", err)
-	}
-	defer func() {
-		_, _ = conn.Exec(context.Background(), "SELECT pg_advisory_unlock($1)", schemaLockKey)
-	}()
-	if err := db.Apply(ctx, pool); err != nil {
-		t.Fatalf("apply schema: %v", err)
-	}
-}
 
 // uniqueToken returns a run of digits that is unique enough to keep this
 // test's rows apart from any other row in a shared test database. It contains
