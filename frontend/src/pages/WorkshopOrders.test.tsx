@@ -17,7 +17,7 @@ const mockedApiFetch = vi.mocked(apiFetch);
 const SESSION_KEY = "werkstatt.session";
 
 function seedSession() {
-  window.localStorage.setItem(
+  window.sessionStorage.setItem(
     SESSION_KEY,
     JSON.stringify({
       employee: { id: 1, name: "Anna Meier", email: "anna@werkstatt.de" },
@@ -81,7 +81,7 @@ beforeEach(() => {
 
 afterEach(() => {
   cleanup();
-  window.localStorage.clear();
+  window.sessionStorage.clear();
 });
 
 describe("WorkshopOrders", () => {

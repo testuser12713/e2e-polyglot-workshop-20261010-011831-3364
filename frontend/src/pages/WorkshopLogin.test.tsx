@@ -78,10 +78,12 @@ describe("WorkshopLogin", () => {
   });
 
   it("logs in, stores the session and opens the workshop area", async () => {
-    mockedApiFetch.mockResolvedValueOnce({
-      token: "test-token",
-      employee: { id: 1, name: "Anna Meier", email: "anna@werkstatt.de" },
-    });
+    mockedApiFetch
+      .mockResolvedValueOnce({
+        token: "test-token",
+        employee: { id: 1, name: "Anna Meier", email: "anna@werkstatt.de" },
+      })
+      .mockResolvedValue({ orders: [] });
 
     renderAt("/werkstatt/anmeldung");
     await fillAndSubmit("anna@werkstatt.de", "geheim");
