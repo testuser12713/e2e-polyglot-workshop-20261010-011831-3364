@@ -85,6 +85,7 @@ SCHEMA_STATEMENTS = [
     CREATE TABLE IF NOT EXISTS invoice_lines (
         id BIGSERIAL PRIMARY KEY,
         invoice_id BIGINT NOT NULL REFERENCES invoices (id),
+        kind TEXT NOT NULL DEFAULT '',
         description TEXT NOT NULL,
         quantity INTEGER NOT NULL DEFAULT 0,
         unit_price_cents INTEGER NOT NULL DEFAULT 0,
@@ -169,11 +170,13 @@ def test_labor_and_parts_are_summed_in_whole_cents(order_factory, monkeypatch) -
     assert draft.invoice_number == f"RE-{order_number}"
 
     labor_line = next(line for line in draft.lines if line.description == "Arbeitszeit")
+    assert labor_line.kind == "labor"
     assert labor_line.quantity == pytest.approx(2.50)
     assert labor_line.unit_price_cents == 8900
     assert labor_line.total_cents == 22250
 
     part_line = next(line for line in draft.lines if line.description == "Ölfilter")
+    assert part_line.kind == "part"
     assert part_line.quantity == pytest.approx(3.0)
     assert part_line.unit_price_cents == 999
     assert part_line.total_cents == 2997

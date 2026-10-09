@@ -80,6 +80,11 @@ CREATE TABLE IF NOT EXISTS invoice_lines (
     total_cents      INTEGER NOT NULL DEFAULT 0
 );
 
+-- Carries the position kind ("labor" / "part") of an invoice line so the
+-- customer invoice table can fill its "Position" column. ALTER keeps the
+-- schema idempotent for databases created before the column existed.
+ALTER TABLE invoice_lines ADD COLUMN IF NOT EXISTS kind TEXT NOT NULL DEFAULT '';
+
 CREATE TABLE IF NOT EXISTS outbox (
     id              BIGSERIAL PRIMARY KEY,
     order_id        BIGINT NOT NULL REFERENCES orders (id),

@@ -85,6 +85,7 @@ SCHEMA_STATEMENTS = [
     CREATE TABLE IF NOT EXISTS invoice_lines (
         id BIGSERIAL PRIMARY KEY,
         invoice_id BIGINT NOT NULL REFERENCES invoices (id),
+        kind TEXT NOT NULL DEFAULT '',
         description TEXT NOT NULL,
         quantity INTEGER NOT NULL DEFAULT 0,
         unit_price_cents INTEGER NOT NULL DEFAULT 0,
@@ -153,8 +154,8 @@ def _draft(order_id: int, order_number: str) -> InvoiceDraft:
         order_id=order_id,
         order_number=order_number,
         lines=[
-            InvoiceLine("Arbeitszeit", 2.0, 8900, 17800),
-            InvoiceLine("Ölfilter", 3.0, 999, 2997),
+            InvoiceLine("Arbeitszeit", 2.0, 8900, 17800, kind="labor"),
+            InvoiceLine("Ölfilter", 3.0, 999, 2997, kind="part"),
         ],
         labor_cents=17800,
         parts_cents=2997,
@@ -187,11 +188,11 @@ def test_invoice_and_lines_are_persisted(order_factory) -> None:
         ).fetchone()
         assert row == (17800, 2997, 20797, 3951, 24748)
         lines = conn.execute(
-            "SELECT quantity, unit_price_cents, total_cents FROM invoice_lines "
+            "SELECT kind, quantity, unit_price_cents, total_cents FROM invoice_lines "
             "WHERE invoice_id = %s ORDER BY id",
             (saved.id,),
         ).fetchall()
-    assert lines == [(2, 8900, 17800), (3, 999, 2997)]
+    assert lines == [("labor", 2, 8900, 17800), ("part", 3, 999, 2997)]
 
 
 def test_saving_twice_leaves_exactly_one_invoice(order_factory) -> None:

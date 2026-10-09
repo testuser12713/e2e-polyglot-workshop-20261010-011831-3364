@@ -86,6 +86,7 @@ def build_invoice(msg: QueueMessage) -> InvoiceDraft:
                     quantity=float(hours_value),
                     unit_price_cents=rate,
                     total_cents=total,
+                    kind=_KIND_LABOR,
                 )
             )
             labor_cents += total
@@ -99,6 +100,7 @@ def build_invoice(msg: QueueMessage) -> InvoiceDraft:
                     quantity=float(quantity_value),
                     unit_price_cents=price_value,
                     total_cents=total,
+                    kind=_KIND_PART,
                 )
             )
             parts_cents += total

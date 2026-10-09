@@ -109,9 +109,9 @@ func addInvoice(t *testing.T, pool *pgxpool.Pool, orderID int) string {
 		t.Fatalf("insert invoice: %v", err)
 	}
 	if _, err := pool.Exec(ctx,
-		`INSERT INTO invoice_lines (invoice_id, description, quantity, unit_price_cents, total_cents)
-		 VALUES ($1, $2, $3, $4, $5)`,
-		invoiceID, "Bremsbeläge erneuern", 1, 12000, 12000,
+		`INSERT INTO invoice_lines (invoice_id, kind, description, quantity, unit_price_cents, total_cents)
+		 VALUES ($1, $2, $3, $4, $5, $6)`,
+		invoiceID, "labor", "Bremsbeläge erneuern", 1, 12000, 12000,
 	); err != nil {
 		t.Fatalf("insert invoice line: %v", err)
 	}
@@ -245,6 +245,9 @@ func TestInvoiceForOrderReturnsLinesAndCents(t *testing.T) {
 	}
 	if len(invoice.Lines) != 1 {
 		t.Fatalf("lines = %d, want 1", len(invoice.Lines))
+	}
+	if invoice.Lines[0].Kind != "labor" {
+		t.Fatalf("line kind = %q, want labor", invoice.Lines[0].Kind)
 	}
 	if invoice.Lines[0].TotalCents != 12000 {
 		t.Fatalf("line total = %d, want 12000", invoice.Lines[0].TotalCents)

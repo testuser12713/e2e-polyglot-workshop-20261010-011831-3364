@@ -200,7 +200,7 @@ func (s *Store) InvoiceForOrder(ctx context.Context, orderID int) (*domain.Invoi
 // invoiceLines loads the lines of one invoice in insertion order.
 func (s *Store) invoiceLines(ctx context.Context, invoiceID int) ([]domain.InvoiceLine, error) {
 	const query = `
-		SELECT description, quantity, unit_price_cents, total_cents
+		SELECT kind, description, quantity, unit_price_cents, total_cents
 		FROM invoice_lines
 		WHERE invoice_id = $1
 		ORDER BY id`
@@ -214,7 +214,7 @@ func (s *Store) invoiceLines(ctx context.Context, invoiceID int) ([]domain.Invoi
 	lines := []domain.InvoiceLine{}
 	for rows.Next() {
 		var line domain.InvoiceLine
-		if err := rows.Scan(&line.Description, &line.Quantity, &line.UnitPriceCents, &line.TotalCents); err != nil {
+		if err := rows.Scan(&line.Kind, &line.Description, &line.Quantity, &line.UnitPriceCents, &line.TotalCents); err != nil {
 			return nil, fmt.Errorf("scan invoice line for invoice %d: %w", invoiceID, err)
 		}
 		lines = append(lines, line)
