@@ -389,6 +389,29 @@ a {
   color: var(--color-fg);
 }
 
+.prose p:last-child {
+  margin-bottom: 0;
+}
+
+.prose section + section {
+  margin-top: var(--space-4);
+}
+
+.prose h2 {
+  margin: 0 0 var(--space-1);
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--color-fg);
+}
+
+.legal-meta {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--color-fgMuted);
+}
+
 .site-main {
   flex: 1 0 auto;
 }
