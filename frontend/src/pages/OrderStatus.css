@@ -1,0 +1,494 @@
+/*
+ * Page-scoped styles for the customer status lookup ("Status abrufen").
+ * Design tokens come from DESIGN.md; the tokens that global.css does not yet
+ * define (status colours, pill radius, signal orange) are declared here on the
+ * page wrapper so this page stays self-contained.
+ */
+
+.order-status {
+  --color-signal: #e8590c;
+  --color-signalSoft: #fdede3;
+  --color-statusAngefragt: #6b7684;
+  --color-statusAngefragtBg: #eef1f4;
+  --color-statusBestaetigt: #0b63ce;
+  --color-statusBestaetigtBg: #e7f0fd;
+  --color-statusInArbeit: #b44a0a;
+  --color-statusInArbeitBg: #fdede3;
+  --color-statusFertig: #1b7f4b;
+  --color-statusFertigBg: #e4f4eb;
+  --color-statusAbgeholt: #3a4450;
+  --color-statusAbgeholtBg: #e9ecef;
+  --radius-pill: 999px;
+  --color-focus: #0b63ce;
+}
+
+/* --- Lookup form ------------------------------------------------------- */
+
+.order-status .form-card {
+  max-width: 560px;
+}
+
+.order-status .field-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: var(--space-3);
+  row-gap: var(--space-3);
+}
+
+.order-status .field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-0);
+  margin-bottom: var(--space-3);
+}
+
+.order-status .field-grid .field {
+  margin-bottom: 0;
+}
+
+.order-status .field label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--color-fg);
+  margin-bottom: var(--space-0);
+}
+
+.order-status .required-marker {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--color-fgMuted);
+  margin-left: var(--space-0);
+}
+
+.order-status .field input {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--color-fg);
+  transition:
+    border-color 120ms ease,
+    box-shadow 120ms ease;
+}
+
+.order-status .field input::placeholder {
+  color: var(--color-fgMuted);
+}
+
+.order-status .field input:hover {
+  border-color: var(--color-borderStrong);
+}
+
+.order-status .field input:focus {
+  outline: none;
+  border-color: var(--color-focus);
+  box-shadow: 0 0 0 2px var(--color-accentSoft);
+}
+
+.order-status .field input.is-invalid {
+  border-color: var(--color-danger);
+  box-shadow: 0 0 0 2px var(--color-dangerBg);
+}
+
+.order-status .field input.is-invalid:focus {
+  border-color: var(--color-danger);
+}
+
+.order-status .field-error {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--color-danger);
+  margin: 0;
+}
+
+.order-status .field-help {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--color-fgMuted);
+  margin: 0 0 var(--space-3);
+}
+
+/* --- Loading button ---------------------------------------------------- */
+
+.order-status .btn.is-loading .btn-label {
+  visibility: hidden;
+  height: 0;
+  width: 0;
+  overflow: hidden;
+  padding: 0;
+  margin: 0;
+}
+
+.order-status .dots {
+  display: none;
+  gap: var(--space-0);
+  align-items: center;
+}
+
+.order-status .btn.is-loading .dots {
+  display: inline-flex;
+}
+
+.order-status .dots i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  animation: order-status-dots-blink 1s infinite both;
+}
+
+.order-status .dots i:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.order-status .dots i:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes order-status-dots-blink {
+  0%,
+  80%,
+  100% {
+    opacity: 0.25;
+  }
+  40% {
+    opacity: 1;
+  }
+}
+
+/* --- Cards / result ---------------------------------------------------- */
+
+.order-status .card-stack > * + * {
+  margin-top: var(--space-3);
+}
+
+.order-status .card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-3);
+}
+
+.order-status .card-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.order-status .card-sub {
+  margin: 2px 0 0;
+  font-size: 14px;
+  color: var(--color-fgMuted);
+}
+
+.order-status .is-num {
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- StatusBadge ------------------------------------------------------- */
+
+.order-status .status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+
+.order-status .status-badge .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex: none;
+}
+
+.order-status .status-angefragt {
+  color: var(--color-statusAngefragt);
+  background: var(--color-statusAngefragtBg);
+}
+
+.order-status .status-angefragt .dot {
+  background: var(--color-statusAngefragt);
+}
+
+.order-status .status-bestaetigt {
+  color: var(--color-statusBestaetigt);
+  background: var(--color-statusBestaetigtBg);
+}
+
+.order-status .status-bestaetigt .dot {
+  background: var(--color-statusBestaetigt);
+}
+
+.order-status .status-inArbeit {
+  color: var(--color-statusInArbeit);
+  background: var(--color-statusInArbeitBg);
+}
+
+.order-status .status-inArbeit .dot {
+  background: var(--color-statusInArbeit);
+}
+
+.order-status .status-fertig {
+  color: var(--color-statusFertig);
+  background: var(--color-statusFertigBg);
+}
+
+.order-status .status-fertig .dot {
+  background: var(--color-statusFertig);
+}
+
+.order-status .status-abgeholt {
+  color: var(--color-statusAbgeholt);
+  background: var(--color-statusAbgeholtBg);
+}
+
+.order-status .status-abgeholt .dot {
+  background: var(--color-statusAbgeholt);
+}
+
+/* --- Timeline ---------------------------------------------------------- */
+
+.order-status .timeline {
+  position: relative;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.order-status .timeline::before {
+  content: "";
+  position: absolute;
+  left: 5px;
+  top: 8px;
+  bottom: 12px;
+  width: 2px;
+  background: var(--color-borderStrong);
+}
+
+.order-status .timeline-item {
+  position: relative;
+  padding: 0 0 var(--space-3) 20px;
+}
+
+.order-status .timeline-item:last-child {
+  padding-bottom: 0;
+}
+
+.order-status .timeline-item::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 8px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid var(--color-borderStrong);
+  background: var(--color-surface);
+  box-sizing: border-box;
+}
+
+.order-status .timeline-item.is-reached::before {
+  background: var(--color-borderStrong);
+}
+
+.order-status .timeline-item.tl-angefragt.is-reached::before {
+  background: var(--color-statusAngefragt);
+  border-color: var(--color-statusAngefragt);
+}
+
+.order-status .timeline-item.tl-bestaetigt.is-reached::before {
+  background: var(--color-statusBestaetigt);
+  border-color: var(--color-statusBestaetigt);
+}
+
+.order-status .timeline-item.tl-inArbeit.is-reached::before {
+  background: var(--color-statusInArbeit);
+  border-color: var(--color-statusInArbeit);
+}
+
+.order-status .timeline-item.tl-fertig.is-reached::before {
+  background: var(--color-statusFertig);
+  border-color: var(--color-statusFertig);
+}
+
+.order-status .timeline-item.tl-abgeholt.is-reached::before {
+  background: var(--color-statusAbgeholt);
+  border-color: var(--color-statusAbgeholt);
+}
+
+.order-status .timeline-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-2);
+}
+
+.order-status .timeline-time {
+  font-size: 14px;
+  color: var(--color-fg);
+  font-variant-numeric: tabular-nums;
+}
+
+.order-status .timeline-actor {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--color-fgMuted);
+}
+
+/* --- Invoice ----------------------------------------------------------- */
+
+.order-status .table-scroll {
+  overflow: auto;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+}
+
+.order-status .data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.order-status .data-table th {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-fgMuted);
+  text-align: left;
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--color-borderStrong);
+  white-space: nowrap;
+}
+
+.order-status .data-table td {
+  font-size: 14px;
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-fg);
+}
+
+.order-status .data-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.order-status .data-table th.num,
+.order-status .data-table td.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.order-status .invoice-summary {
+  margin-top: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-1);
+}
+
+.order-status .invoice-row {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-5);
+  font-size: 14px;
+}
+
+.order-status .invoice-row span:first-child {
+  color: var(--color-fgMuted);
+  font-weight: 500;
+}
+
+.order-status .invoice-row .is-num {
+  font-weight: 600;
+  color: var(--color-fg);
+}
+
+.order-status .invoice-total {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-5);
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.order-status .invoice-total .is-num {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-fg);
+}
+
+/* --- Alert ------------------------------------------------------------- */
+
+.order-status .alert {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  border: 1px solid;
+  border-left: 3px solid;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.5;
+  margin-bottom: var(--space-3);
+}
+
+.order-status .alert svg {
+  flex: none;
+  margin-top: 2px;
+}
+
+.order-status .alert-danger {
+  background: var(--color-dangerBg);
+  border-color: rgba(192, 52, 43, 0.28);
+  border-left-color: var(--color-danger);
+  color: var(--color-danger);
+}
+
+/* --- EmptyState -------------------------------------------------------- */
+
+.order-status .empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  text-align: center;
+  padding: var(--space-6) var(--space-4);
+}
+
+.order-status .empty-state .empty-desc {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--color-fgMuted);
+  max-width: 45ch;
+  margin: 0;
+}
+
+/* --- Mobile ------------------------------------------------------------ */
+
+@media (max-width: 639px) {
+  .order-status .field-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .order-status .btn-primary {
+    width: 100%;
+  }
+}
