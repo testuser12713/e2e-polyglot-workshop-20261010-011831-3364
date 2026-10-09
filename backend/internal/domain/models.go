@@ -160,4 +160,16 @@ type ErrorBody struct {
 type ErrorDetail struct {
 	Code    string `json:"code"`
 	Message string `json:"message"`
+	// Details carries one entry per rejected input field on a validation_error.
+	// It is omitted for every other error, so the uniform error body keeps its
+	// {"error":{"code","message"}} shape everywhere else.
+	Details []FieldError `json:"details,omitempty"`
+}
+
+// FieldError names one rejected input field of a request and why it was
+// rejected. It is safe to expose: it names the contract field, never an
+// internal detail.
+type FieldError struct {
+	Field   string `json:"field"`
+	Message string `json:"message"`
 }
