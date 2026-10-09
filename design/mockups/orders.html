@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Auftragsliste — Werkstattbereich</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="app-header" data-od-id="app-header">
+  <div class="app-header-inner">
+    <a class="brand" href="dashboard.html" data-od-id="brand-link">Werkstattportal</a>
+    <nav class="site-nav" aria-label="Werkstattbereich">
+      <a href="dashboard.html" data-od-id="nav-dashboard">Dashboard</a>
+      <a href="orders.html" class="active" data-od-id="nav-orders">Auftragsliste</a>
+    </nav>
+    <div class="header-right">
+      <span class="user-email header-actions-desktop" data-od-id="user-email">anna.meier@werkstatt.de</span>
+      <a class="btn btn-text header-actions-desktop" href="login.html" data-od-id="btn-logout">Abmelden</a>
+    </div>
+    <button class="nav-toggle" aria-expanded="false" aria-controls="mobile-panel" aria-label="Menü öffnen" data-od-id="nav-toggle">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+        <path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+    </button>
+  </div>
+  <nav class="mobile-panel" id="mobile-panel" aria-label="Werkstattbereich">
+    <a href="dashboard.html">Dashboard</a>
+    <a href="orders.html" class="active">Auftragsliste</a>
+    <span class="mp-muted">anna.meier@werkstatt.de</span>
+    <button type="button" onclick="window.location.href='login.html'">Abmelden</button>
+  </nav>
+</header>
+
+<main class="page-main container" data-od-id="main">
+  <h1 class="page-title" data-od-id="page-title">Auftragsliste</h1>
+
+  <section class="card" data-od-id="orders-card">
+    <form class="filter-bar" data-od-id="filter-bar" novalidate>
+      <div class="field search-field" data-od-id="field-search">
+        <label for="searchPlate" class="sr-only">Nach Kennzeichen suchen</label>
+        <input type="text" id="searchPlate" placeholder="Nach Kennzeichen suchen" autocomplete="off" data-od-id="input-search">
+      </div>
+      <div class="field filter-select" data-od-id="field-status-filter">
+        <label for="filterStatus" class="sr-only">Nach Status filtern</label>
+        <div class="select-wrap">
+          <select id="filterStatus" data-od-id="select-filter-status">
+            <option value="">Alle Status</option>
+            <option value="angefragt">angefragt</option>
+            <option value="bestätigt">bestätigt</option>
+            <option value="in Arbeit">in Arbeit</option>
+            <option value="fertig">fertig</option>
+            <option value="abgeholt">abgeholt</option>
+          </select>
+        </div>
+      </div>
+    </form>
+
+    <div class="chip-row" id="chipRow" hidden data-od-id="chip-row"></div>
+
+    <div class="empty-state" id="ordersEmpty" hidden data-od-id="orders-empty">
+      <svg class="empty-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+      <div class="empty-title">Keine Aufträge für diesen Filter</div>
+      <div class="empty-desc">Kein Auftrag passt zu den gewählten Filtern.</div>
+      <button type="button" class="btn btn-secondary" data-od-id="btn-empty-reset">Filter zurücksetzen</button>
+    </div>
+
+    <div class="orders-table-wrap" data-od-id="orders-table-wrap">
+      <div class="table-scroll">
+        <table class="data-table" data-od-id="orders-table">
+          <thead>
+            <tr>
+              <th>Auftragsnummer</th>
+              <th>Kennzeichen</th>
+              <th class="th-md-hide">Fahrzeug</th>
+              <th>Status</th>
+              <th class="th-md-hide">Wunschtermin</th>
+              <th class="num">Betrag brutto</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="ordersTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="orders-cards" id="ordersCards" data-od-id="orders-cards"></div>
+  </section>
+</main>
+
+<footer class="app-footer" data-od-id="app-footer">
+  <div class="app-footer-inner">
+    <div class="footer-meta">© 2026 Kfz-Service Berger GmbH</div>
+    <nav class="footer-links" aria-label="Rechtliches">
+      <a href="legal-notice.html" data-od-id="footer-impressum">Impressum</a>
+      <a href="privacy.html" data-od-id="footer-datenschutz">Datenschutzerklärung</a>
+    </nav>
+  </div>
+</footer>
+
+<script src="app.js"></script>
+<script>
+(function () {
+  'use strict';
+  var search = document.getElementById('searchPlate');
+  var filter = document.getElementById('filterStatus');
+  var tbody = document.getElementById('ordersTableBody');
+  var cards = document.getElementById('ordersCards');
+  var chipRow = document.getElementById('chipRow');
+  var empty = document.getElementById('ordersEmpty');
+  var tableWrap = document.querySelector('.orders-table-wrap');
+  var debounceTimer = null;
+
+  var state = { query: '', status: '' };
+
+  function rowHTML(o, badgeHtml) {
+    var br = o.brutto === null ? '<span class="cell-muted">—</span>' : wk.fmt.cents(o.brutto);
+    return '<tr data-od-id="row-' + o.num.replace(/\D/g, '') + '">' +
+      '<td class="is-num"><a href="order-detail.html">' + o.num + '</a></td>' +
+      '<td>' + o.plate + '</td>' +
+      '<td class="th-md-hide">' + o.vehicle + '</td>' +
+      '<td>' + badgeHtml + '</td>' +
+      '<td class="th-md-hide">' + o.date + '</td>' +
+      '<td class="num">' + br + '</td>' +
+      '<td><a class="btn btn-text btn-sm" href="order-detail.html">Öffnen</a></td>' +
+      '</tr>';
+  }
+
+  function cardHTML(o, badgeHtml) {
+    var br = o.brutto === null ? '—' : wk.fmt.cents(o.brutto);
+    return '<div class="card order-card" data-od-id="order-card-' + o.num.replace(/\D/g, '') + '">' +
+      '<div class="order-card-line1"><span class="order-card-num">' + o.num + '</span>' + badgeHtml + '</div>' +
+      '<div class="order-card-line2">' + o.plate + ' · ' + o.vehicle + '</div>' +
+      '<div class="order-card-line3">' + br + '</div>' +
+      '<div class="order-card-actions"><a class="btn btn-secondary btn-sm" href="order-detail.html">Auftrag öffnen</a></div>' +
+      '</div>';
+  }
+
+  function render() {
+    var list = window.wkOrders.filter(function (o) {
+      if (state.status && o.status !== state.status) return false;
+      if (state.query && o.plate.toUpperCase().indexOf(state.query) === -1) return false;
+      return true;
+    });
+
+    tbody.innerHTML = list.map(function (o) { return rowHTML(o, wk.badge(o.status)); }).join('');
+    cards.innerHTML = list.map(function (o) { return cardHTML(o, wk.badge(o.status)); }).join('');
+
+    var has = !!(state.query || state.status);
+    empty.hidden = !(has && list.length === 0);
+    tableWrap.hidden = list.length === 0;
+
+    var chips = [];
+    if (state.status) {
+      chips.push('<span class="chip">Status: ' + wk.esc(state.status) +
+        '<button class="chip-remove" type="button" aria-label="Statusfilter entfernen" data-clear="status">✕</button></span>');
+    }
+    if (state.query) {
+      chips.push('<span class="chip">Kennzeichen: ' + wk.esc(state.query) +
+        '<button class="chip-remove" type="button" aria-label="Kennzeichenfilter entfernen" data-clear="query">✕</button></span>');
+    }
+    if (has) chips.push('<button type="button" class="btn btn-text btn-sm" id="resetFilters">Filter zurücksetzen</button>');
+    chipRow.innerHTML = chips.join('');
+    chipRow.hidden = !has;
+
+    chipRow.querySelectorAll('.chip-remove').forEach(function (b) {
+      b.addEventListener('click', function () {
+        if (b.getAttribute('data-clear') === 'status') { filter.value = ''; state.status = ''; }
+        else { search.value = ''; state.query = ''; }
+        render();
+      });
+    });
+    var reset = document.getElementById('resetFilters');
+    if (reset) reset.addEventListener('click', function () {
+      search.value = ''; filter.value = ''; state.query = ''; state.status = '';
+      render();
+    });
+    var emptyReset = empty.querySelector('button');
+    if (emptyReset) emptyReset.addEventListener('click', function () {
+      search.value = ''; filter.value = ''; state.query = ''; state.status = '';
+      render();
+    });
+  }
+
+  search.addEventListener('input', function () {
+    var v = String(search.value).trim().toUpperCase();
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(function () {
+      state.query = v;
+      render();
+    }, 250);
+  });
+
+  filter.addEventListener('change', function () {
+    state.status = filter.value;
+    render();
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

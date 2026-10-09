@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Auftrag AUF-2026-000123 — Werkstattbereich</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="app-header" data-od-id="app-header">
+  <div class="app-header-inner">
+    <a class="brand" href="dashboard.html" data-od-id="brand-link">Werkstattportal</a>
+    <nav class="site-nav" aria-label="Werkstattbereich">
+      <a href="dashboard.html" data-od-id="nav-dashboard">Dashboard</a>
+      <a href="orders.html" class="active" data-od-id="nav-orders">Auftragsliste</a>
+    </nav>
+    <div class="header-right">
+      <span class="user-email header-actions-desktop" data-od-id="user-email">anna.meier@werkstatt.de</span>
+      <a class="btn btn-text header-actions-desktop" href="login.html" data-od-id="btn-logout">Abmelden</a>
+    </div>
+    <button class="nav-toggle" aria-expanded="false" aria-controls="mobile-panel" aria-label="Menü öffnen" data-od-id="nav-toggle">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+        <path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+    </button>
+  </div>
+  <nav class="mobile-panel" id="mobile-panel" aria-label="Werkstattbereich">
+    <a href="dashboard.html">Dashboard</a>
+    <a href="orders.html" class="active">Auftragsliste</a>
+    <span class="mp-muted">anna.meier@werkstatt.de</span>
+    <button type="button" onclick="window.location.href='login.html'">Abmelden</button>
+  </nav>
+</header>
+
+<main class="page-main container" data-od-id="main">
+  <p><a class="btn btn-text btn-sm" href="orders.html" data-od-id="back-to-orders">← Zur Auftragsliste</a></p>
+
+  <div class="vehicle-line" style="margin-bottom:16px">
+    <h1 class="page-title" style="margin:0" data-od-id="page-title">Auftrag AUF-2026-000123</h1>
+    <span id="headerBadge" data-od-id="header-badge"></span>
+  </div>
+
+  <div id="alerts" class="card-stack" style="margin-bottom:16px" data-od-id="alerts"></div>
+
+  <div class="detail-grid">
+    <div class="card-stack">
+      <section class="card" data-od-id="vehicle-card">
+        <div class="card-header"><h2 class="card-title">Fahrzeug &amp; Kunde</h2></div>
+        <dl class="kv">
+          <div class="kv-row"><dt>Kennzeichen</dt><dd class="is-num">B-AB 1234</dd></div>
+          <div class="kv-row"><dt>Fahrzeug</dt><dd>VW Golf 8</dd></div>
+          <div class="kv-row"><dt>Kilometerstand</dt><dd class="is-num">123.456 km</dd></div>
+          <div class="kv-row"><dt>Wunschtermin</dt><dd class="is-num">20.10.2026, 10:00 Uhr</dd></div>
+          <div class="kv-row"><dt>Kunde</dt><dd>Marco Brandt</dd></div>
+          <div class="kv-row"><dt>E-Mail</dt><dd>m.brandt@example.com</dd></div>
+          <div class="kv-row"><dt>Telefon</dt><dd class="is-num">0176 1234 5678</dd></div>
+        </dl>
+        <div class="kv-block">
+          <div class="kv-dt">Problembeschreibung</div>
+          <p class="kv-dd">Bremsen quietschen beim Anfahren, ABS-Lampe leuchtet zeitweise auf. Bitte Bremsen vorne prüfen.</p>
+        </div>
+      </section>
+
+      <section class="card" data-od-id="positions-card">
+        <div class="card-header">
+          <h2 class="card-title">Positionen</h2>
+          <div class="card-action">
+            <button type="button" class="btn btn-primary" id="addPosition" data-od-id="btn-add-position">Position erfassen</button>
+          </div>
+        </div>
+        <div class="table-scroll">
+          <table class="data-table" data-od-id="positions-table">
+            <thead>
+              <tr>
+                <th>Position</th>
+                <th>Beschreibung</th>
+                <th class="num">Menge</th>
+                <th class="num">Einzelpreis (netto)</th>
+                <th class="num">Summe</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="positionsBody"></tbody>
+          </table>
+        </div>
+        <div class="invoice-summary">
+          <div class="invoice-total"><span>Zwischensumme (netto)</span>&nbsp;&nbsp;<span class="is-num" id="positionsSum">—</span></div>
+        </div>
+      </section>
+
+      <section class="card" id="invoiceCard" hidden data-od-id="invoice-card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">Rechnung zu Auftrag AUF-2026-000123</h2>
+            <p class="card-sub">B-AB 1234 · VW Golf 8</p>
+          </div>
+        </div>
+        <div class="table-scroll">
+          <table class="data-table" id="invoiceTable" data-od-id="invoice-table">
+            <thead>
+              <tr>
+                <th>Position</th>
+                <th>Beschreibung</th>
+                <th class="num">Menge</th>
+                <th class="num">Einzelpreis (netto)</th>
+                <th class="num">Summe</th>
+              </tr>
+            </thead>
+            <tbody id="invoiceBody"></tbody>
+          </table>
+        </div>
+        <div class="invoice-summary">
+          <div class="invoice-row"><span>Netto</span><span class="is-num" id="invNetto">—</span></div>
+          <div class="invoice-row"><span>Mehrwertsteuer (19&nbsp;%)</span><span class="is-num" id="invMwst">—</span></div>
+          <div class="invoice-total"><span>Brutto</span>&nbsp;&nbsp;<span class="is-num" id="invBrutto">—</span></div>
+        </div>
+      </section>
+    </div>
+
+    <section class="card" data-od-id="status-card">
+      <div class="card-header"><h2 class="card-title">Status</h2></div>
+      <div id="timeline" data-od-id="timeline"></div>
+      <div class="field-group" style="margin-top:24px">
+        <div class="field" data-od-id="field-status-select">
+          <label for="nextStatus">Statuswechsel</label>
+          <div class="select-wrap">
+            <select id="nextStatus" data-od-id="select-next-status"></select>
+          </div>
+          <p class="field-help" id="statusHint">Nur der nächste erlaubte Status ist wählbar.</p>
+        </div>
+        <button type="button" class="btn btn-primary" id="setStatus" data-od-id="btn-set-status">Status setzen</button>
+      </div>
+    </section>
+  </div>
+</main>
+
+<div class="modal-backdrop" id="positionModal" hidden data-od-id="position-modal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="positionModalTitle" data-od-id="position-dialog">
+    <h2 class="modal-header" id="positionModalTitle">Position erfassen</h2>
+    <form id="positionForm" novalidate>
+      <div class="field" data-od-id="field-pos-type">
+        <label for="posType">Art der Position<span class="required-marker">erforderlich</span></label>
+        <div class="select-wrap">
+          <select id="posType">
+            <option value="Arbeitszeit">Arbeitszeit</option>
+            <option value="Teile">Teile</option>
+          </select>
+        </div>
+      </div>
+      <div class="field" data-od-id="field-pos-desc">
+        <label for="posDesc">Beschreibung<span class="required-marker">erforderlich</span></label>
+        <input type="text" id="posDesc">
+        <p class="field-error" id="err-posDesc" hidden></p>
+      </div>
+      <div class="field" data-od-id="field-pos-qty">
+        <label for="posQty" id="posQtyLabel">Arbeitszeit (Stunden)<span class="required-marker">erforderlich</span></label>
+        <input type="text" id="posQty" class="is-num" inputmode="decimal">
+        <p class="field-error" id="err-posQty" hidden></p>
+      </div>
+      <div class="field" data-od-id="field-pos-price">
+        <label for="posPrice">Einzelpreis (netto)<span class="required-marker">erforderlich</span></label>
+        <input type="text" id="posPrice" class="is-num" inputmode="decimal">
+        <p class="field-help">Stundensatz laut Konfiguration: 78,00 € / h</p>
+        <p class="field-error" id="err-posPrice" hidden></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="cancelPosition" data-od-id="btn-cancel-position">Abbrechen</button>
+        <button type="submit" class="btn btn-primary" id="savePosition" data-od-id="btn-save-position">
+          <span class="btn-label">Speichern</span>
+          <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<footer class="app-footer" data-od-id="app-footer">
+  <div class="app-footer-inner">
+    <div class="footer-meta">© 2026 Kfz-Service Berger GmbH</div>
+    <nav class="footer-links" aria-label="Rechtliches">
+      <a href="legal-notice.html" data-od-id="footer-impressum">Impressum</a>
+      <a href="privacy.html" data-od-id="footer-datenschutz">Datenschutzerklärung</a>
+    </nav>
+  </div>
+</footer>
+
+<script src="app.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  var orderNum = 'AUF-2026-000123';
+  var currentStatus = 'bestätigt';
+  var timesObj = {
+    'angefragt': '05.10.2026, 11:20 Uhr',
+    'bestätigt': '05.10.2026, 15:45 Uhr'
+  };
+  var positions = [
+    { type: 'Arbeitszeit', desc: 'Voruntersuchung Bremse vorne', qty: 0.5, unit: 'h', price: 7800 },
+    { type: 'Teile', desc: 'Bremsbelagsatz vorne (ATE)', qty: 1, unit: 'Stück', price: 5280 }
+  ];
+  var editIndex = -1;
+
+  var EDITABLE = ['angefragt', 'bestätigt', 'in Arbeit'];
+
+  var headerBadge = document.getElementById('headerBadge');
+  var alerts = document.getElementById('alerts');
+  var timelineEl = document.getElementById('timeline');
+  var positionsBody = document.getElementById('positionsBody');
+  var positionsSum = document.getElementById('positionsSum');
+  var invoiceCard = document.getElementById('invoiceCard');
+  var invoiceBody = document.getElementById('invoiceBody');
+  var nextStatus = document.getElementById('nextStatus');
+  var setStatusBtn = document.getElementById('setStatus');
+  var addBtn = document.getElementById('addPosition');
+  var modal = document.getElementById('positionModal');
+
+  function sumOf(p) {
+    return p.unit === 'h' ? Math.round(p.qty * p.price) : Math.round(p.qty * p.price);
+  }
+  function nettoCents() {
+    return positions.reduce(function (s, p) { return s + sumOf(p); }, 0);
+  }
+  function qtyFmt(p) { return p.unit === 'h' ? wk.fmt.hrs(p.qty) : wk.fmt.qty(p.qty); }
+
+  function nowStamp() {
+    var d = new Date();
+    var p2 = function (n) { return String(n).padStart(2, '0'); };
+    return p2(d.getDate()) + '.' + p2(d.getMonth() + 1) + '.' + d.getFullYear() + ', ' + p2(d.getHours()) + ':' + p2(d.getMinutes()) + ' Uhr';
+  }
+
+  function renderBadge() { headerBadge.innerHTML = wk.badge(currentStatus); }
+
+  function renderTimeline() {
+    var times = wk.STATUS.map(function (s) { return timesObj[s] || null; });
+    timelineEl.innerHTML = wk.timelineHTML(wk.makeTimeline(times, currentStatus));
+  }
+
+  function statusEditable() { return EDITABLE.indexOf(currentStatus) !== -1; }
+
+  function renderPositions() {
+    var editable = statusEditable();
+    positionsBody.innerHTML = positions.map(function (p, i) {
+      var actions = editable
+        ? '<td><button type="button" class="btn btn-text btn-sm" data-edit="' + i + '">Bearbeiten</button>' +
+          '<button type="button" class="btn btn-text btn-sm" data-del="' + i + '">Löschen</button></td>'
+        : '<td><span class="cell-muted">—</span></td>';
+      return '<tr data-od-id="position-row-' + i + '">' +
+        '<td>' + p.type + '</td>' +
+        '<td>' + wk.esc(p.desc) + '</td>' +
+        '<td class="num">' + qtyFmt(p) + '</td>' +
+        '<td class="num">' + wk.fmt.cents(p.price) + '</td>' +
+        '<td class="num">' + wk.fmt.cents(sumOf(p)) + '</td>' +
+        actions +
+        '</tr>';
+    }).join('');
+    positionsSum.textContent = wk.fmt.cents(nettoCents());
+
+    positionsBody.querySelectorAll('[data-edit]').forEach(function (b) {
+      b.addEventListener('click', function () { openPosition(parseInt(b.getAttribute('data-edit'), 10)); });
+    });
+    positionsBody.querySelectorAll('[data-del]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        positions.splice(parseInt(b.getAttribute('data-del'), 10), 1);
+        renderPositions();
+        renderInvoice();
+        showAlert('info', 'Position entfernt.', null);
+      });
+    });
+
+    addBtn.disabled = !editable;
+    addBtn.title = editable ? '' : 'Positionen können nach dem Fertigstellen nicht mehr geändert werden.';
+  }
+
+  function invoiceData() {
+    return wk.invoiceFrom(positions.map(function (p) { return { sum: sumOf(p) }; }));
+  }
+
+  function renderInvoice() {
+    if (wk.STATUS.indexOf(currentStatus) < 3) { invoiceCard.hidden = true; return; }
+    var inv = invoiceData();
+    invoiceBody.innerHTML = positions.map(function (p) {
+      return '<tr>' +
+        '<td>' + p.type + '</td>' +
+        '<td>' + wk.esc(p.desc) + '</td>' +
+        '<td class="num">' + qtyFmt(p) + '</td>' +
+        '<td class="num">' + wk.fmt.cents(p.price) + '</td>' +
+        '<td class="num">' + wk.fmt.cents(sumOf(p)) + '</td>' +
+        '</tr>';
+    }).join('');
+    document.getElementById('invNetto').textContent = wk.fmt.cents(inv.netto);
+    document.getElementById('invMwst').textContent = wk.fmt.cents(inv.mwst);
+    document.getElementById('invBrutto').textContent = wk.fmt.cents(inv.brutto);
+    invoiceCard.hidden = false;
+  }
+
+  function renderStatusControl() {
+    var idx = wk.STATUS.indexOf(currentStatus);
+    var nextIdx = idx + 1;
+    var hasNext = nextIdx < wk.STATUS.length;
+    nextStatus.innerHTML = wk.STATUS.map(function (s, i) {
+      var dis = i === nextIdx ? '' : ' disabled';
+      var sel = i === nextIdx ? ' selected' : '';
+      return '<option value="' + s + '"' + dis + sel + '>' + s + '</option>';
+    }).join('');
+    setStatusBtn.disabled = !hasNext;
+    var hint = document.getElementById('statusHint');
+    if (!hasNext) {
+      hint.textContent = 'Der Auftrag ist abgeschlossen; kein weiterer Statuswechsel möglich.';
+    } else {
+      hint.textContent = 'Nur „' + wk.STATUS[nextIdx] + '“ ist als nächster Status wählbar.';
+    }
+  }
+
+  function showAlert(tone, message, sub) {
+    var div = document.createElement('div');
+    div.className = 'alert alert-' + tone;
+    div.setAttribute('role', tone === 'danger' ? 'alert' : 'status');
+    var icons = {
+      success: '<circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.6"/><path d="M5 8.2l2.1 2.1L11 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>',
+      info: '<circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.6"/><path d="M8 7.5V11M8 5h.01" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>',
+      warning: '<path d="M8 2l6 11H2L8 2z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M8 7v3M8 12h.01" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>',
+      danger: '<circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.6"/><path d="M8 5v3.5M8 11h.01" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>'
+    };
+    div.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">' + icons[tone] + '</svg>' +
+      '<div><div>' + wk.esc(message) + '</div>' + (sub ? '<div class="alert-sub">' + wk.esc(sub) + '</div>' : '') + '</div>';
+    alerts.appendChild(div);
+  }
+
+  function clearAlerts() { alerts.innerHTML = ''; }
+
+  function openPosition(index) {
+    editIndex = typeof index === 'number' ? index : -1;
+    var isEdit = editIndex >= 0;
+    document.getElementById('positionModalTitle').textContent = isEdit ? 'Position bearbeiten' : 'Position erfassen';
+    var p = isEdit ? positions[editIndex] : { type: 'Arbeitszeit', desc: '', qty: '', price: wk.HOURLY_RATE_CENTS / 100 };
+    document.getElementById('posType').value = p.type;
+    document.getElementById('posDesc').value = isEdit ? p.desc : '';
+    document.getElementById('posQty').value = isEdit ? wk.fmt.dec(p.qty) : '';
+    document.getElementById('posPrice').value = isEdit ? wk.fmt.dec(p.price / 100) : wk.fmt.dec(wk.HOURLY_RATE_CENTS / 100);
+    updateQtyLabel();
+    ['posDesc', 'posQty', 'posPrice'].forEach(function (id) { wk.setFieldError(document.getElementById(id), ''); });
+    wk.openModal(modal, isEdit ? null : addBtn, document.getElementById('posType'));
+  }
+
+  function updateQtyLabel() {
+    var t = document.getElementById('posType').value;
+    document.getElementById('posQtyLabel').innerHTML = (t === 'Arbeitszeit' ? 'Arbeitszeit (Stunden)' : 'Menge') + '<span class="required-marker">erforderlich</span>';
+  }
+
+  function parseNum(v) {
+    return parseFloat(String(v).replace(/\./g, '').replace(',', '.'));
+  }
+
+  document.getElementById('posType').addEventListener('change', updateQtyLabel);
+  document.getElementById('addPosition').addEventListener('click', function () { openPosition(-1); });
+  document.getElementById('cancelPosition').addEventListener('click', function () { wk.closeModal(modal); });
+
+  document.getElementById('positionForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var type = document.getElementById('posType').value;
+    var desc = document.getElementById('posDesc');
+    var qty = document.getElementById('posQty');
+    var price = document.getElementById('posPrice');
+    var q = parseNum(qty.value);
+    var pr = parseNum(price.value);
+    var ok = true;
+    if (!String(desc.value).trim()) { wk.setFieldError(desc, 'Bitte eine Beschreibung angeben.'); ok = false; } else wk.setFieldError(desc, '');
+    if (isNaN(q) || q <= 0) { wk.setFieldError(qty, 'Bitte eine Menge größer 0 angeben.'); ok = false; } else wk.setFieldError(qty, '');
+    if (isNaN(pr) || pr < 0) { wk.setFieldError(price, 'Bitte einen gültigen Einzelpreis angeben.'); ok = false; } else wk.setFieldError(price, '');
+    if (!ok) return;
+    if (type === 'Teile' && q % 1 !== 0) { wk.setFieldError(qty, 'Teile werden in ganzen Stück erfasst.'); return; }
+
+    var entry = {
+      type: type,
+      desc: String(desc.value).trim(),
+      qty: q,
+      unit: type === 'Arbeitszeit' ? 'h' : 'Stück',
+      price: Math.round(pr * 100)
+    };
+    if (editIndex >= 0) positions[editIndex] = entry; else positions.push(entry);
+    wk.setLoading(document.getElementById('savePosition'), true);
+    setTimeout(function () {
+      wk.setLoading(document.getElementById('savePosition'), false);
+      wk.closeModal(modal);
+      renderPositions();
+      renderInvoice();
+      showAlert('success', editIndex >= 0 ? 'Position aktualisiert.' : 'Position erfasst.', null);
+      editIndex = -1;
+    }, 400);
+  });
+
+  setStatusBtn.addEventListener('click', function () {
+    var target = nextStatus.value;
+    if (!target || wk.STATUS.indexOf(target) !== wk.STATUS.indexOf(currentStatus) + 1) return;
+    var previous = currentStatus;
+    currentStatus = target;
+    timesObj[target] = nowStamp();
+    renderBadge();
+    renderTimeline();
+    renderStatusControl();
+    renderPositions();
+    renderInvoice();
+    clearAlerts();
+    showAlert('success', 'Status gesetzt: ' + target + '.', 'Vorheriger Status: ' + previous + '.');
+    if (target === 'fertig') {
+      showAlert('info', 'Der Rechnungsauftrag wurde in die Warteschlange gestellt.', 'Die Rechnung wird im Hintergrund erstellt.');
+    }
+  });
+
+  renderBadge();
+  renderTimeline();
+  renderStatusControl();
+  renderPositions();
+  renderInvoice();
+})();
+</script>
+</body>
+</html>
