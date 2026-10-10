@@ -51,6 +51,22 @@ describe("app shell", () => {
     }
   });
 
+  it("renders the brand as a non-interactive product name on the start page", () => {
+    renderAt("/");
+
+    expect(screen.getByText("Werkstattportal")).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Werkstattportal" })).toBeNull();
+  });
+
+  it("renders the brand as a link back to the start page on every other route", () => {
+    renderAt("/impressum");
+
+    expect(screen.getByRole("link", { name: "Werkstattportal" })).toHaveAttribute(
+      "href",
+      "/",
+    );
+  });
+
   it("redirects /werkstatt/auftraege to the login page without a session", () => {
     renderAt("/werkstatt/auftraege");
     expect(screen.getByTestId("location")).toHaveTextContent("/werkstatt/anmeldung");
