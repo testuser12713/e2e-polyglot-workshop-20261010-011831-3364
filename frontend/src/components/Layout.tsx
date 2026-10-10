@@ -34,9 +34,13 @@ export function Layout() {
     <div className="app-shell">
       <header className="site-header">
         <div className="site-header__inner">
-          <Link className="brand" to="/">
-            Werkstattportal
-          </Link>
+          {pathname === "/" ? (
+            <span className="brand">Werkstattportal</span>
+          ) : (
+            <Link className="brand" to="/">
+              Werkstattportal
+            </Link>
+          )}
 
           <button
             type="button"
